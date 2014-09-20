@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- avoid fake favicons requests -->
+<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+<title>Smooth scrolling to anchors in Javascript</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="scrollToAnchorRef.css">
+<script type="text/javascript" src="../src/scrollToAnchorRef.js"></script>
+<!--[if lt IE 8]>
+<style>.fixed { top: expression(eval(document.body.scrollTop));	position: absolute !important; }</style>
+<![endif]-->
+</head>
+<body>
+
+	<div id="topindex" class="fixed">
+		<a class="buttons" href="#intro">Introduction</a>
+		<a class="buttons" href="#section-1">Section 1</a>
+		<a class="buttons" href="#section-2">Section 2</a>
+		<a class="buttons" href="#section-3">Section 3</a>
+	</div>
+
+	<div id="intro">
+		<a class="backtop" href="#topindex">Top</a>
+		<h1>Introduction</h1>
+		<h2>What is it ?</h2>
+		<p>
+			This is an example on how to detect which element scrolls the view (HTML or BODY).<br>
+			It started with a feedback request on a JSMentors question/thread about smooth scrolling.<br>
+			The 'game' was transitioning the <code>scrollTop</code> property using <code>requestAnimationFrame</code> (rAF).<br>
+			At that point I was tempted and curious to see how many lines of code were realy necessary for that task.<br>
+			<br><b>TODO:</b><br>
+		</p>
+		<ul>
+			<li>make the duration time configurable (currently fixed to 1000ms)</li>
+			<li>allow referencing external easing functions to improve smoothness</li>
+			<li>improve code and readibility, add code comments were necessary</li>
+			<li>Bugs ? Please report !</li>
+		</ul>
+		<h2>Is it of some use ?</h2>
+		<p>
+			It depends on your needs, from this small code you can just take the <code>getScrollingElement()</code> if it work for you.<br>
+			However, you may also look at the code and see how to profit a global capturing event (delegation).<br>
+			Also see how adding a few lines of code would solve one of the most frequent web problems:<br>
+			<b><u>perform operations when users click on selected page links.</u></b><br><br>
+			The advantages of the final approach are:
+		</p>
+		<ul>
+			<li>avoid using monster frameworks</li>
+			<li>avoid waiting for a ready/load event</li>
+			<li>avoid attaching listener to hundreds elements</li>
+			<li>60fps smooth scroll using native <code>requestAnimationFrame</code></li>
+			<li>options let the target anchor be set/followed in the URL</li>
+			<li>pure Javascript, no libraries, full cross-browser down to IE6</li>
+			<li>faster page load and faster running scripts, no memory wasted</li>
+		</ul>
+		<h2>How can I use/profit it ?</h2>
+		<p>
+			The <code>getScrollingElement()</code> function performs a feature detection to find which element is responsible for scrollling the current view.<br>
+			Firefox, Opera and IE use the <code>document.documentElement</code> when in Standard mode and the <code>document.body</code> when in Quirks mode.<br>
+			Webkit, on his side and disrespectful of current specifications, will always use the <code>document.body</code> (W3C specifications: <a href=" http://dev.w3.org/csswg/cssom-view/#dom-element-scrolltop">CSSOM View Module</a>).
+		</p>
+		<p>
+			The feature detection, if proven to work, could avoid DOM code to fail when Webkit will fix the known and long-standing scrolling bug.<br>
+			Currently DOM libraries & frameworks use a regexp to sniff and exclude Webkit <code>/webkit/i.test(navigator.userAgent)</code> from using<br>
+			the <code>document.documentElement</code> but that assumption may fail soon. A correct feature detection test is needed, hope this fits for the task.<br>
+		</p>
+		<p>
+			Cut & Paste the following feature detection function in your code:
+		</p>
+		<pre>
+	function getScrollingElement() {
+		var d = document;
+		return	d.documentElement.scrollHeight > d.body.scrollHeight &&
+			d.compatMode.indexOf('CSS1') == 0 ?
+			d.documentElement :
+			d.body;
+	}
+		</pre>
+		<p>
+			and invoke it without arguments:
+		</p>
+		<pre>
+	var scrollEl = getScrollingElement();
+		</pre>
+		<h2>Needed info</h2>
+		<p>
+			<code>getScrollingElement()</code> must be invoked every time, once, just before starting a scroll (content may change).<br>
+			If you do tests with it make sure there is enough content to be scrolled (vertical scrollbar should be visible) or nothing will happen.<br>
+		</p>
+	</div>
+
+	<div id="section-1">
+		<a class="backtop" href="#topindex">Top</a>
+		<h1>Section 1</h1>
+		<p>
+			Lorem ipsum dolor sit amet, ut debet suscipit eam, no postea habemus mea, mei meliore singulis eu. Amet simul erroribus vel in. No malis similique signiferumque his. Sed in libris possit vivendum. Te commodo urbanitas scriptorem sed, nullam vivendo id sed. Ius tincidunt rationibus cu, quidam omittantur id mel. Cu amet percipit vis, ea mei primis perpetua laboramus.
+			Ius in latine deserunt quaestio, cu fuisset placerat imperdiet quo. Sea vitae erroribus eu. Cum iusto timeam ut, splendide instructior id vel, denique postulant vis id. No quas libris argumentum est, brute tation ubique id pro. Graeci civibus an vel. Movet everti his ut, illud impetus ut ius.
+			Dico eligendi salutatus pro ei, sea summo explicari no, sed elit rebum percipitur no. Ad qui nullam aeterno, tation facilisi nec ad, vis no omnium vituperatoribus. No nulla doctus nec, at est sanctus probatus. Usu brute nobis probatus te, ex epicuri omnesque molestie duo. Ea sea doctus phaedrum, vim ex menandri eleifend.
+			Ad debitis pericula qui. Eos an nonumy democritum persequeris. Ne sea volumus menandri, ex qui porro ridens. Has te facer delectus, mei in esse ornatus. Eum dolore urbanitas te, ea adipiscing percipitur sit.
+			Ea pri case voluptua, meis ferri altera an vel. Idque discere eu eam, zril scaevola dissentiunt vel ne. Ea nam audire utroque rationibus. Appareat delicata qualisque vis ad, ex has mundi fabulas laoreet, sed minim debet ea. Est accusamus principes te, at timeam philosophia vel. Per odio intellegebat an, mea cetero denique elaboraret at, persecuti definitionem cu sit.
+		</p>
+		<p>
+			Lorem ipsum dolor sit amet, ut debet suscipit eam, no postea habemus mea, mei meliore singulis eu. Amet simul erroribus vel in. No malis similique signiferumque his. Sed in libris possit vivendum. Te commodo urbanitas scriptorem sed, nullam vivendo id sed. Ius tincidunt rationibus cu, quidam omittantur id mel. Cu amet percipit vis, ea mei primis perpetua laboramus.
+			Ius in latine deserunt quaestio, cu fuisset placerat imperdiet quo. Sea vitae erroribus eu. Cum iusto timeam ut, splendide instructior id vel, denique postulant vis id. No quas libris argumentum est, brute tation ubique id pro. Graeci civibus an vel. Movet everti his ut, illud impetus ut ius.
+			Dico eligendi salutatus pro ei, sea summo explicari no, sed elit rebum percipitur no. Ad qui nullam aeterno, tation facilisi nec ad, vis no omnium vituperatoribus. No nulla doctus nec, at est sanctus probatus. Usu brute nobis probatus te, ex epicuri omnesque molestie duo. Ea sea doctus phaedrum, vim ex menandri eleifend.
+			Ad debitis pericula qui. Eos an nonumy democritum persequeris. Ne sea volumus menandri, ex qui porro ridens. Has te facer delectus, mei in esse ornatus. Eum dolore urbanitas te, ea adipiscing percipitur sit.
+			Ea pri case voluptua, meis ferri altera an vel. Idque discere eu eam, zril scaevola dissentiunt vel ne. Ea nam audire utroque rationibus. Appareat delicata qualisque vis ad, ex has mundi fabulas laoreet, sed minim debet ea. Est accusamus principes te, at timeam philosophia vel. Per odio intellegebat an, mea cetero denique elaboraret at, persecuti definitionem cu sit.
+		</p>
+		<p>
+			Lorem ipsum dolor sit amet, ut debet suscipit eam, no postea habemus mea, mei meliore singulis eu. Amet simul erroribus vel in. No malis similique signiferumque his. Sed in libris possit vivendum. Te commodo urbanitas scriptorem sed, nullam vivendo id sed. Ius tincidunt rationibus cu, quidam omittantur id mel. Cu amet percipit vis, ea mei primis perpetua laboramus.
+			Ius in latine deserunt quaestio, cu fuisset placerat imperdiet quo. Sea vitae erroribus eu. Cum iusto timeam ut, splendide instructior id vel, denique postulant vis id. No quas libris argumentum est, brute tation ubique id pro. Graeci civibus an vel. Movet everti his ut, illud impetus ut ius.
+			Dico eligendi salutatus pro ei, sea summo explicari no, sed elit rebum percipitur no. Ad qui nullam aeterno, tation facilisi nec ad, vis no omnium vituperatoribus. No nulla doctus nec, at est sanctus probatus. Usu brute nobis probatus te, ex epicuri omnesque molestie duo. Ea sea doctus phaedrum, vim ex menandri eleifend.
+			Ad debitis pericula qui. Eos an nonumy democritum persequeris. Ne sea volumus menandri, ex qui porro ridens. Has te facer delectus, mei in esse ornatus. Eum dolore urbanitas te, ea adipiscing percipitur sit.
+			Ea pri case voluptua, meis ferri altera an vel. Idque discere eu eam, zril scaevola dissentiunt vel ne. Ea nam audire utroque rationibus. Appareat delicata qualisque vis ad, ex has mundi fabulas laoreet, sed minim debet ea. Est accusamus principes te, at timeam philosophia vel. Per odio intellegebat an, mea cetero denique elaboraret at, persecuti definitionem cu sit.
+		</p>
+	</div>
+
+	<div id="section-2">
+		<a class="backtop" href="#topindex">Top</a>
+		<h1>Section 2</h1>
+		<p>
+			Lorem ipsum dolor sit amet, ut debet suscipit eam, no postea habemus mea, mei meliore singulis eu. Amet simul erroribus vel in. No malis similique signiferumque his. Sed in libris possit vivendum. Te commodo urbanitas scriptorem sed, nullam vivendo id sed. Ius tincidunt rationibus cu, quidam omittantur id mel. Cu amet percipit vis, ea mei primis perpetua laboramus.
+			Ius in latine deserunt quaestio, cu fuisset placerat imperdiet quo. Sea vitae erroribus eu. Cum iusto timeam ut, splendide instructior id vel, denique postulant vis id. No quas libris argumentum est, brute tation ubique id pro. Graeci civibus an vel. Movet everti his ut, illud impetus ut ius.
+			Dico eligendi salutatus pro ei, sea summo explicari no, sed elit rebum percipitur no. Ad qui nullam aeterno, tation facilisi nec ad, vis no omnium vituperatoribus. No nulla doctus nec, at est sanctus probatus. Usu brute nobis probatus te, ex epicuri omnesque molestie duo. Ea sea doctus phaedrum, vim ex menandri eleifend.
+			Ad debitis pericula qui. Eos an nonumy democritum persequeris. Ne sea volumus menandri, ex qui porro ridens. Has te facer delectus, mei in esse ornatus. Eum dolore urbanitas te, ea adipiscing percipitur sit.
+			Ea pri case voluptua, meis ferri altera an vel. Idque discere eu eam, zril scaevola dissentiunt vel ne. Ea nam audire utroque rationibus. Appareat delicata qualisque vis ad, ex has mundi fabulas laoreet, sed minim debet ea. Est accusamus principes te, at timeam philosophia vel. Per odio intellegebat an, mea cetero denique elaboraret at, persecuti definitionem cu sit.
+		</p>
+		<p>
+			Lorem ipsum dolor sit amet, ut debet suscipit eam, no postea habemus mea, mei meliore singulis eu. Amet simul erroribus vel in. No malis similique signiferumque his. Sed in libris possit vivendum. Te commodo urbanitas scriptorem sed, nullam vivendo id sed. Ius tincidunt rationibus cu, quidam omittantur id mel. Cu amet percipit vis, ea mei primis perpetua laboramus.
+			Ius in latine deserunt quaestio, cu fuisset placerat imperdiet quo. Sea vitae erroribus eu. Cum iusto timeam ut, splendide instructior id vel, denique postulant vis id. No quas libris argumentum est, brute tation ubique id pro. Graeci civibus an vel. Movet everti his ut, illud impetus ut ius.
+			Dico eligendi salutatus pro ei, sea summo explicari no, sed elit rebum percipitur no. Ad qui nullam aeterno, tation facilisi nec ad, vis no omnium vituperatoribus. No nulla doctus nec, at est sanctus probatus. Usu brute nobis probatus te, ex epicuri omnesque molestie duo. Ea sea doctus phaedrum, vim ex menandri eleifend.
+			Ad debitis pericula qui. Eos an nonumy democritum persequeris. Ne sea volumus menandri, ex qui porro ridens. Has te facer delectus, mei in esse ornatus. Eum dolore urbanitas te, ea adipiscing percipitur sit.
+			Ea pri case voluptua, meis ferri altera an vel. Idque discere eu eam, zril scaevola dissentiunt vel ne. Ea nam audire utroque rationibus. Appareat delicata qualisque vis ad, ex has mundi fabulas laoreet, sed minim debet ea. Est accusamus principes te, at timeam philosophia vel. Per odio intellegebat an, mea cetero denique elaboraret at, persecuti definitionem cu sit.
+		</p>
+		<p>
+			Lorem ipsum dolor sit amet, ut debet suscipit eam, no postea habemus mea, mei meliore singulis eu. Amet simul erroribus vel in. No malis similique signiferumque his. Sed in libris possit vivendum. Te commodo urbanitas scriptorem sed, nullam vivendo id sed. Ius tincidunt rationibus cu, quidam omittantur id mel. Cu amet percipit vis, ea mei primis perpetua laboramus.
+			Ius in latine deserunt quaestio, cu fuisset placerat imperdiet quo. Sea vitae erroribus eu. Cum iusto timeam ut, splendide instructior id vel, denique postulant vis id. No quas libris argumentum est, brute tation ubique id pro. Graeci civibus an vel. Movet everti his ut, illud impetus ut ius.
+			Dico eligendi salutatus pro ei, sea summo explicari no, sed elit rebum percipitur no. Ad qui nullam aeterno, tation facilisi nec ad, vis no omnium vituperatoribus. No nulla doctus nec, at est sanctus probatus. Usu brute nobis probatus te, ex epicuri omnesque molestie duo. Ea sea doctus phaedrum, vim ex menandri eleifend.
+			Ad debitis pericula qui. Eos an nonumy democritum persequeris. Ne sea volumus menandri, ex qui porro ridens. Has te facer delectus, mei in esse ornatus. Eum dolore urbanitas te, ea adipiscing percipitur sit.
+			Ea pri case voluptua, meis ferri altera an vel. Idque discere eu eam, zril scaevola dissentiunt vel ne. Ea nam audire utroque rationibus. Appareat delicata qualisque vis ad, ex has mundi fabulas laoreet, sed minim debet ea. Est accusamus principes te, at timeam philosophia vel. Per odio intellegebat an, mea cetero denique elaboraret at, persecuti definitionem cu sit.
+		</p>
+	</div>
+
+	<div id="section-3">
+		<a class="backtop" href="#topindex">Top</a>
+		<h1>Section 3</h1>
+		<p>
+			Lorem ipsum dolor sit amet, ut debet suscipit eam, no postea habemus mea, mei meliore singulis eu. Amet simul erroribus vel in. No malis similique signiferumque his. Sed in libris possit vivendum. Te commodo urbanitas scriptorem sed, nullam vivendo id sed. Ius tincidunt rationibus cu, quidam omittantur id mel. Cu amet percipit vis, ea mei primis perpetua laboramus.
+			Ius in latine deserunt quaestio, cu fuisset placerat imperdiet quo. Sea vitae erroribus eu. Cum iusto timeam ut, splendide instructior id vel, denique postulant vis id. No quas libris argumentum est, brute tation ubique id pro. Graeci civibus an vel. Movet everti his ut, illud impetus ut ius.
+			Dico eligendi salutatus pro ei, sea summo explicari no, sed elit rebum percipitur no. Ad qui nullam aeterno, tation facilisi nec ad, vis no omnium vituperatoribus. No nulla doctus nec, at est sanctus probatus. Usu brute nobis probatus te, ex epicuri omnesque molestie duo. Ea sea doctus phaedrum, vim ex menandri eleifend.
+			Ad debitis pericula qui. Eos an nonumy democritum persequeris. Ne sea volumus menandri, ex qui porro ridens. Has te facer delectus, mei in esse ornatus. Eum dolore urbanitas te, ea adipiscing percipitur sit.
+			Ea pri case voluptua, meis ferri altera an vel. Idque discere eu eam, zril scaevola dissentiunt vel ne. Ea nam audire utroque rationibus. Appareat delicata qualisque vis ad, ex has mundi fabulas laoreet, sed minim debet ea. Est accusamus principes te, at timeam philosophia vel. Per odio intellegebat an, mea cetero denique elaboraret at, persecuti definitionem cu sit.
+		</p>
+		<p>
+			Lorem ipsum dolor sit amet, ut debet suscipit eam, no postea habemus mea, mei meliore singulis eu. Amet simul erroribus vel in. No malis similique signiferumque his. Sed in libris possit vivendum. Te commodo urbanitas scriptorem sed, nullam vivendo id sed. Ius tincidunt rationibus cu, quidam omittantur id mel. Cu amet percipit vis, ea mei primis perpetua laboramus.
+			Ius in latine deserunt quaestio, cu fuisset placerat imperdiet quo. Sea vitae erroribus eu. Cum iusto timeam ut, splendide instructior id vel, denique postulant vis id. No quas libris argumentum est, brute tation ubique id pro. Graeci civibus an vel. Movet everti his ut, illud impetus ut ius.
+			Dico eligendi salutatus pro ei, sea summo explicari no, sed elit rebum percipitur no. Ad qui nullam aeterno, tation facilisi nec ad, vis no omnium vituperatoribus. No nulla doctus nec, at est sanctus probatus. Usu brute nobis probatus te, ex epicuri omnesque molestie duo. Ea sea doctus phaedrum, vim ex menandri eleifend.
+			Ad debitis pericula qui. Eos an nonumy democritum persequeris. Ne sea volumus menandri, ex qui porro ridens. Has te facer delectus, mei in esse ornatus. Eum dolore urbanitas te, ea adipiscing percipitur sit.
+			Ea pri case voluptua, meis ferri altera an vel. Idque discere eu eam, zril scaevola dissentiunt vel ne. Ea nam audire utroque rationibus. Appareat delicata qualisque vis ad, ex has mundi fabulas laoreet, sed minim debet ea. Est accusamus principes te, at timeam philosophia vel. Per odio intellegebat an, mea cetero denique elaboraret at, persecuti definitionem cu sit.
+		</p>
+		<p>
+			Lorem ipsum dolor sit amet, ut debet suscipit eam, no postea habemus mea, mei meliore singulis eu. Amet simul erroribus vel in. No malis similique signiferumque his. Sed in libris possit vivendum. Te commodo urbanitas scriptorem sed, nullam vivendo id sed. Ius tincidunt rationibus cu, quidam omittantur id mel. Cu amet percipit vis, ea mei primis perpetua laboramus.
+			Ius in latine deserunt quaestio, cu fuisset placerat imperdiet quo. Sea vitae erroribus eu. Cum iusto timeam ut, splendide instructior id vel, denique postulant vis id. No quas libris argumentum est, brute tation ubique id pro. Graeci civibus an vel. Movet everti his ut, illud impetus ut ius.
+			Dico eligendi salutatus pro ei, sea summo explicari no, sed elit rebum percipitur no. Ad qui nullam aeterno, tation facilisi nec ad, vis no omnium vituperatoribus. No nulla doctus nec, at est sanctus probatus. Usu brute nobis probatus te, ex epicuri omnesque molestie duo. Ea sea doctus phaedrum, vim ex menandri eleifend.
+			Ad debitis pericula qui. Eos an nonumy democritum persequeris. Ne sea volumus menandri, ex qui porro ridens. Has te facer delectus, mei in esse ornatus. Eum dolore urbanitas te, ea adipiscing percipitur sit.
+			Ea pri case voluptua, meis ferri altera an vel. Idque discere eu eam, zril scaevola dissentiunt vel ne. Ea nam audire utroque rationibus. Appareat delicata qualisque vis ad, ex has mundi fabulas laoreet, sed minim debet ea. Est accusamus principes te, at timeam philosophia vel. Per odio intellegebat an, mea cetero denique elaboraret at, persecuti definitionem cu sit.
+		</p>
+	</div>
+
+</body>
+</html>

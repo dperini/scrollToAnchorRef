@@ -1,0 +1,29 @@
+body {
+	font: 16px/24px sans-serif;
+}
+
+code {
+	color: #c63;
+}
+
+.backtop {
+	right: 0;
+	width: 32px;
+	position: absolute;
+	padding: 0 0 1px 8px;
+	background-color: #9cf;
+	border: 1px outset #369;
+}
+
+.buttons {
+	padding: 4px 8px;
+	text-align: center;
+	background-color: #9cf;
+	border: 1px outset #369;
+}
+
+/* a fixed header */
+.fixed {
+	position: fixed;
+	margin-left: 200px;
+}
