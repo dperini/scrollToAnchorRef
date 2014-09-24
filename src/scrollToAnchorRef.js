@@ -1,4 +1,4 @@
-(function() {
+(function(window, options) {
 
 	var i,
 	w = window,
@@ -7,88 +7,147 @@
 	s = 'addEventListener',
 
 	// determine event model
-	w3c = d[s];
-	pre = w3c ? '' : 'on';
-	add = w3c ? s : 'attachEvent';
+	w3c = d[s],
+	pre = w3c ? '' : 'on',
+	add = w3c ? s : 'attachEvent',
+
+	// needed if 'matchesSelector' used
+	//MATCH = prefix(r, 'matchesSelector'),
 
 	// get needed prefixed API names
-	MATCH = prefix(r, 'matchesSelector'),
 	CANCEL = prefix(w, 'cancelAnimationFrame'),
 	REQUEST = prefix(w, 'requestAnimationFrame');
 
-	// a polyfill is our last resource
+	// set default options values
+	options.callback || (options.callback = null);
+	options.duration || (options.duration = 1000);
+	options.easingFunc || (options.easingFunc = null);
+	options.fixedHeader || (options.fixedHeader = '');
+	options.followTarget || (options.followTarget = false);
+
+	// a polyfill as last resource for IE
 	if (typeof w[REQUEST] != 'function') {
 		w[REQUEST] = function(loop) {
 			setTimeout(function() {
-				loop((new Date).getTime());
-			}, 1000/60);
+				loop(+new Date);
+			}, options.duration/60);
 		};
 	}
 
-	// build prefixed API
+	// get vendor prefixed API name
 	function prefix(h, f) {
-		var a, p , i, n;
+		var a, p, i, n;
 		if (typeof h[f] != 'function') {
-			p = [ 'webkit', 'moz', 'ms' , 'o'];
+			p = ['webkit', 'moz', 'ms', 'o'];
 			n = f.charAt(0).toUpperCase() + f.slice(1);
-			for (i in p) if (p[i] + n in h) a = p[i] + n;
+			for (i in p) { if (p[i] + n in h) a = p[i] + n; }
 		}
 		return a ? a : f;
 	}
 
-	// determine the element to use
-	function getScrollingElement() {
-		return	d.documentElement.scrollHeight > d.body.scrollHeight &&
-				d.compatMode.indexOf('CSS1') == 0 ?
-				d.documentElement :
-				d.body;
+	// get fixed header height if any
+	function getHeaderOffset(name) {
+		var node = d.getElementById(name);
+		return node && node.clientHeight || 0;
 	}
 
-	function scrollTo(dest, ms) {
-		var el = getScrollingElement(), s_time = 0,
+	// get reference node from anchor target
+	function getReferenceFrom(target) {
+		// use 'attributes' collection for IE < 9
+		var attr = target.attributes['href'].value;
+		return attr ? d.getElementById(attr.slice(1)) : null;
+	}
+
+	// determine the element to use
+	function getScrollingElement() {
+		return d.documentElement.scrollHeight > d.body.scrollHeight &&
+			d.compatMode.indexOf('CSS1') === 0 ?
+			d.documentElement :
+			d.body;
+	}
+
+	// check if node match
+	function match(node) {
+		// new browsers could use 'matchesSelector/getAttribute'
+		// however there are no benefits in this specific case
+		// return node[MATCH]("a[href*='#']:not([href='#'])") ?
+		// 	node.getAttribute('href').value : null;
+		var attr = node.attributes['href'].value;
+		return node.nodeName.toLowerCase() == 'a' &&
+			(/^#[\w]+/).test(attr) ?
+			attr : null;
+	}
+
+	// default easing function
+	function easingFunc(t, b, c, d) {
+		// in-out cubic easing from:
+		// http://gizma.com/easing/
+		t /= d / 2;
+		if (t < 1) return c / 2 * t * t * t + b;
+		t -= 2; return c / 2 * (t * t * t + 2) + b;
+	}
+
+	if (typeof options.easingFunc == 'function') {
+		easingFunc = options.easingFunc;
+	}
+
+	// scroll to anchor reference
+	function scrollToAnchorRef(dest, msecs, callback) {
+
+		var el = getScrollingElement(), start_time = 0,
 		start = el.scrollTop, delta = dest - start;
-		ms || (ms = 1000);
+		msecs || (msecs = options.duration);
 		w[REQUEST](loop);
+
 		function loop(time) {
-			s_time || (s_time = time);
-			if (ms > (time - s_time)) {
+			var run_time;
+			start_time || (start_time = time);
+			run_time = time - start_time;
+			if (msecs > run_time) {
 				w[REQUEST](loop);
-				el.scrollTop = delta * ((time - s_time) / ms) + start;
-			} else el.scrollTop = delta + start;
-		};
+				el.scrollTop = easingFunc(run_time, start, delta, msecs);
+			} else {
+				// double check to avoid a repaint ?
+				if (dest != delta + start) el.scrollTop = delta + start;
+				if (typeof callback == 'function') callback(+new Date);
+			}
+		}
+
 	}
 
 	// add a global click event handler
 	d[add](pre + 'click', function(e) {
 
-		var attr, node, offset = 0,
+		var node, offset,
 
 		// consider older IE engines
 		target = e.target || e.srcElement;
 
-		// if the node matches our conditions engage a scroll action
-		// on newer browser 'matchesSelector' could be used
-		// (target[MATCH]("a[href*='#']:not([href='#'])"))
-		if (target && target.nodeName.toLowerCase() == 'a' &&
-			(attr = target.attributes["href"].value) &&
-			/^#[\w]+/.test(attr)) {
+		// if the target node matches our conditions
+		// engage a scroll to the referenced node id
+		if (target && match(target)) {
 
-			// get anchor node reference by it's id
-			node = d.getElementById(attr.slice(1));
-			if (node) {
-				// get #topindex element height if any
-				offset = d.getElementById('topindex');
-				offset = offset && offset.clientHeight || 0;
-			}
-
-			scrollTo(node.offsetTop - offset, 1000);
+			node = getReferenceFrom(target);
+			offset = getHeaderOffset(options.fixedHeader || '');
+			scrollToAnchorRef(node.offsetTop - offset, options.duration, options.callback);
 
 			// remove the following lines to allow the
 			// target anchor "#" be set/followed in the URL
-			if (e.preventDefault) e.preventDefault();
-			else e.returnValue = false;
-			return false;
+			if (!options.followTarget) {
+				if (e.preventDefault) e.preventDefault();
+				else e.returnValue = false;
+				return false;
+			}
+
+			return true;
+
 		}
 	}, true);
 
-})();
+})(window, {
+	callback: null,
+	duration: '1000',
+	easingFunc: null,
+	followTarget: false,
+	fixedHeader: 'topindex'
+});
